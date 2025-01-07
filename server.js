@@ -13,10 +13,6 @@ app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
 
-app.get('/', (req, res) => {
-  res.send('Server is running!')
-})
-
 //db
 
 mongoose

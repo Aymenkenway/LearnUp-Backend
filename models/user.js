@@ -1,8 +1,7 @@
 import mongoose from 'mongoose'
+const { Schema } = mongoose
 
-const { schema } = mongoose
-
-const UserSchema = new Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -27,15 +26,17 @@ const UserSchema = new Schema(
     },
     role: {
       type: [String],
-      defaults: ['Subscriber'],
-      enum: ['Subscriber', 'instructor', 'Admin'],
+      default: ['Subscriber'],
+      enum: ['Subscriber', 'Instructor', 'Admin'],
     },
-    sctripe_account_id: '',
+    stripe_account_id: {
+      type: String,
+      default: '',
+    },
     stripe_seller: {},
     stripeSession: {},
   },
-
   { timestamps: true }
 )
 
-export default mongoose.model('User', UserSchema)
+export default mongoose.model('User', userSchema)

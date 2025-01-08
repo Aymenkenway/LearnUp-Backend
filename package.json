@@ -12,6 +12,8 @@
   "type": "module",
   "description": "",
   "dependencies": {
+    "@chargily/chargily-pay": "^2.1.0",
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "@sendgrid/mail": "^8.1.4",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
@@ -22,10 +24,15 @@
     "esm": "^3.2.25",
     "express": "^4.21.2",
     "express-jwt": "^6.0.0",
+    "from": "^0.1.7",
+    "import": "^0.0.6",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.8.3",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.9",
-    "shortid": "^2.2.16"
+    "paypal": "^1.0.1",
+    "query-string": "^9.1.1",
+    "shortid": "^2.2.16",
+    "stripe": "^17.5.0"
   }
 }

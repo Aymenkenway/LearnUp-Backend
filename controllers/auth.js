@@ -1,7 +1,7 @@
 import User from '../models/user.js'
 import { hashPassword, comparePassword } from '../utils/auth.js'
 import jwt from 'jsonwebtoken'
-import nanoid from 'nanoid'
+import { nanoid } from 'nanoid'
 import sgMail from '@sendgrid/mail'
 
 // const awsConfig = {

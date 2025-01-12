@@ -49,27 +49,28 @@ export const login = async (req, res) => {
   try {
     // console.log(req.body);
     const { email, password } = req.body
-    console.log(email, password)
+
     // check if our db has user with that email
     const user = await User.findOne({ email }).exec()
 
     if (!user) return res.status(400).send('No user found')
     // check password
     const match = await comparePassword(password, user.password)
-    console.log('match', match)
     if (!match) return res.status(400).send('Wrong password')
 
     // create signed jwt
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
+      expiresIn: '24h',
     })
     // return user and token to client, exclude hashed password
     user.password = undefined
     // send token in cookie
+
     res.cookie('token', token, {
       httpOnly: true,
       // secure: true, // only works on https
     })
+
     // send user as json response
     res.json(user)
   } catch (err) {

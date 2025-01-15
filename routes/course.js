@@ -14,6 +14,7 @@ import {
   uploadVideo,
   removeVideo,
   addLesson,
+  update,
 } from '../controllers/course.js'
 
 router.post('/course/upload-image', uploadImage)
@@ -31,5 +32,7 @@ router.post(
 )
 router.post('/course/video-remove/:instructorId', requireSignin, removeVideo)
 router.post('/course/lesson/:slug/:instructorId', requireSignin, addLesson)
+
+router.put('/course/:slug', requireSignin, update)
 
 export default router

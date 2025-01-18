@@ -254,3 +254,60 @@ export const updateLesson = async (req, res) => {
     return res.status(400).send('Update lesson failed')
   }
 }
+
+export const publishCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params
+    // find post
+    const course = await Course.findById(courseId).select('instructor').exec()
+    // is owner?
+    if (course.instructor._id != req.user._id) {
+      return res.status(400).send('Unauthorized')
+    }
+
+    const updated = await Course.findByIdAndUpdate(
+      courseId,
+      { published: true },
+      { new: true }
+    ).exec()
+    // console.log("course published", course);
+    // return;
+    res.json(updated)
+  } catch (err) {
+    console.log(err)
+    return res.status(400).send('Publish course failed')
+  }
+}
+
+export const unpublishCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params
+    // find post
+    const course = await Course.findById(courseId).select('instructor').exec()
+    // is owner?
+    if (course.instructor._id != req.user._id) {
+      return res.status(400).send('Unauthorized')
+    }
+
+    const updated = await Course.findByIdAndUpdate(
+      courseId,
+      { published: false },
+      { new: true }
+    ).exec()
+    // console.log("course published", course);
+    // return;
+    res.json(updated)
+  } catch (err) {
+    console.log(err)
+    return res.status(400).send('Publish course failed')
+  }
+}
+
+export const courses = async (req, res) => {
+  // console.log("all courses");
+  const all = await Course.find({ published: true })
+    .populate('instructor', '_id name')
+    .exec()
+  // console.log("============> ", all);
+  res.json(all)
+}

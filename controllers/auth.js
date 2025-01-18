@@ -60,7 +60,7 @@ export const login = async (req, res) => {
 
     // create signed jwt
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '24h',
+      expiresIn: '1min',
     })
     // return user and token to client, exclude hashed password
     user.password = undefined

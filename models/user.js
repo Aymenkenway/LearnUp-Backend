@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 const { Schema } = mongoose
-
+const { ObjectId } = Schema
 const userSchema = new Schema(
   {
     name: {
@@ -36,6 +36,7 @@ const userSchema = new Schema(
       type: String,
       default: '',
     },
+    courses: [{ type: ObjectId, ref: 'Course' }],
   },
   { timestamps: true }
 )

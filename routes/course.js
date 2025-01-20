@@ -20,6 +20,8 @@ import {
   publishCourse,
   unpublishCourse,
   courses,
+  checkEnrollment,
+  freeEnrollment,
 } from '../controllers/course.js'
 
 router.post('/course/upload-image', uploadImage)
@@ -44,5 +46,7 @@ router.post('/course/lesson/:slug/:instructorId', requireSignin, addLesson)
 router.put('/course/lesson/:slug/:instructorId', requireSignin, updateLesson)
 router.put('/course/:slug', requireSignin, update)
 router.put('/course/:slug/:lessonId', requireSignin, removeLesson)
+router.get('/check-enrollment/:courseId', requireSignin, checkEnrollment)
+router.post('/free-enrollment/:courseId', requireSignin, freeEnrollment)
 
 export default router

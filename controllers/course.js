@@ -5,6 +5,10 @@ import slugify from 'slugify'
 import { readFileSync } from 'fs'
 import fs from 'fs'
 import User from '../models/user.js'
+
+import Stripe from 'stripe'
+const stripe = new Stripe(process.env.STRIPE_SECRET)
+
 // Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -349,6 +353,52 @@ export const freeEnrollment = async (req, res) => {
     })
   } catch (err) {
     console.log('free enrollment err', err)
+    return res.status(400).send('Enrollment create failed')
+  }
+}
+export const paidEnrollment = async (req, res) => {
+  try {
+    // check if course is free or paid
+    const course = await Course.findById(req.params.courseId)
+      .populate('instructor')
+      .exec()
+    if (!course.paid) return
+    // application fee 30%
+    const fee = (course.price * 30) / 100
+    // create stripe session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: course.name,
+            },
+            unit_amount: Math.round(course.price.toFixed(2) * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      payment_intent_data: {
+        application_fee_amount: Math.round(fee.toFixed(2) * 100),
+        transfer_data: {
+          destination: course.instructor.stripe_account_id,
+        },
+      },
+      success_url: `${process.env.STRIPE_SUCCESS_URL}/${course._id}`,
+      cancel_url: process.env.STRIPE_CANCEL_URL,
+    })
+
+    console.log('SESSION ID => ', session)
+
+    await User.findByIdAndUpdate(req.user._id, {
+      stripeSession: session,
+    }).exec()
+    res.send(session.id)
+  } catch (err) {
+    console.log('PAID ENROLLMENT ERR', err)
     return res.status(400).send('Enrollment create failed')
   }
 }

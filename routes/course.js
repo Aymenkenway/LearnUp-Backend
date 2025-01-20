@@ -22,6 +22,7 @@ import {
   courses,
   checkEnrollment,
   freeEnrollment,
+  paidEnrollment,
 } from '../controllers/course.js'
 
 router.post('/course/upload-image', uploadImage)
@@ -48,5 +49,6 @@ router.put('/course/:slug', requireSignin, update)
 router.put('/course/:slug/:lessonId', requireSignin, removeLesson)
 router.get('/check-enrollment/:courseId', requireSignin, checkEnrollment)
 router.post('/free-enrollment/:courseId', requireSignin, freeEnrollment)
+router.post('/paid-enrollment/:courseId', requireSignin, paidEnrollment)
 
 export default router

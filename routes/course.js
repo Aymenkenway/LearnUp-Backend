@@ -3,7 +3,11 @@ import express from 'express'
 const router = express.Router()
 import formidable from 'express-formidable'
 // middleware
-import { requireSignin, isInstructor } from '../middlewares/index.js'
+import {
+  requireSignin,
+  isInstructor,
+  isEnrolled,
+} from '../middlewares/index.js'
 
 // controllers
 import {
@@ -23,6 +27,8 @@ import {
   checkEnrollment,
   freeEnrollment,
   paidEnrollment,
+  stripeSuccess,
+  userCourses,
 } from '../controllers/course.js'
 
 router.post('/course/upload-image', uploadImage)
@@ -50,5 +56,8 @@ router.put('/course/:slug/:lessonId', requireSignin, removeLesson)
 router.get('/check-enrollment/:courseId', requireSignin, checkEnrollment)
 router.post('/free-enrollment/:courseId', requireSignin, freeEnrollment)
 router.post('/paid-enrollment/:courseId', requireSignin, paidEnrollment)
+router.get('/stripe-success/:courseId', requireSignin, stripeSuccess)
+router.get('/user-courses', requireSignin, userCourses)
+router.get('/user/course/:slug', requireSignin, isEnrolled, read)
 
 export default router

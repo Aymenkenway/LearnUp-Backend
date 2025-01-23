@@ -90,10 +90,8 @@ export const logout = async (req, res) => {
 
 export const currentUser = async (req, res) => {
   try {
-    console.log('hello', req.body)
     const user = await User.findById(req.user._id).select('-password').exec()
-    console.log('hl')
-    console.log('CURRENT_USER', user)
+
     return res.json({ ok: true })
   } catch (err) {
     console.log(err)
@@ -156,7 +154,7 @@ export const forgotPassword = async (req, res) => {
 
     // Send email using SendGrid
     await sgMail.send(msg)
-    console.log('Email sent successfully')
+
     res.json({ ok: true })
   } catch (err) {
     console.error('Error sending email:', err)

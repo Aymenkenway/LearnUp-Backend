@@ -29,6 +29,9 @@ import {
   paidEnrollment,
   stripeSuccess,
   userCourses,
+  markCompleted,
+  listCompleted,
+  markIncomplete,
 } from '../controllers/course.js'
 
 router.post('/course/upload-image', uploadImage)
@@ -59,5 +62,8 @@ router.post('/paid-enrollment/:courseId', requireSignin, paidEnrollment)
 router.get('/stripe-success/:courseId', requireSignin, stripeSuccess)
 router.get('/user-courses', requireSignin, userCourses)
 router.get('/user/course/:slug', requireSignin, isEnrolled, read)
+router.post('/mark-completed', requireSignin, markCompleted)
+router.post('/list-completed', requireSignin, listCompleted)
+router.post('/mark-incomplete', requireSignin, markIncomplete)
 
 export default router

@@ -1,6 +1,8 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { nanoid } from 'nanoid'
 import Course from '../models/course.js'
+import Completed from '../models/completed.js'
+
 import slugify from 'slugify'
 import { readFileSync } from 'fs'
 import fs from 'fs'
@@ -41,7 +43,7 @@ export const uploadImage = async (req, res) => {
           console.error(err)
           return res.sendStatus(400)
         }
-        console.log(result) // Log the result
+
         res.status(200).send({
           url: result.secure_url, // Return the secure URL of the uploaded image
           public_id: result.public_id, // Return the public ID
@@ -59,11 +61,9 @@ export const removeImage = async (req, res) => {
   try {
     const { public_id } = req.body.image // Cloudinary uses `public_id` to identify images
 
-    console.log('reqeust body', req.body.image.public_id)
     if (!public_id) {
       return res.status(400).send('No image specified')
     }
-    console.log('here', public_id)
     // Send the delete request to Cloudinary
     cloudinary.uploader.destroy(public_id, (err, result) => {
       if (err) {
@@ -252,7 +252,7 @@ export const updateLesson = async (req, res) => {
         },
       }
     ).exec()
-    console.log('updated => ', updated)
+
     res.json({ ok: true })
   } catch (err) {
     console.log(err)
@@ -346,7 +346,7 @@ export const freeEnrollment = async (req, res) => {
       },
       { new: true }
     ).exec()
-    console.log(result)
+
     res.json({
       message: 'Congratulations! You have successfully enrolled',
       course,
@@ -391,8 +391,6 @@ export const paidEnrollment = async (req, res) => {
       cancel_url: process.env.STRIPE_CANCEL_URL,
     })
 
-    console.log('SESSION ID => ', session)
-
     await User.findByIdAndUpdate(req.user._id, {
       stripeSession: session,
     }).exec()
@@ -415,7 +413,7 @@ export const stripeSuccess = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(
       user.stripeSession.id
     )
-    console.log('STRIPE SUCCESS', session)
+
     // if session payment status is paid, push course to user's course []
     if (session.payment_status === 'paid') {
       await User.findByIdAndUpdate(user._id, {
@@ -436,4 +434,67 @@ export const userCourses = async (req, res) => {
     .populate('instructor', '_id name')
     .exec()
   res.json(courses)
+}
+
+export const markCompleted = async (req, res) => {
+  const { courseId, lessonId } = req.body
+  // console.log(courseId, lessonId);
+  // find if user with that course is already created
+  const existing = await Completed.findOne({
+    user: req.user._id,
+    course: courseId,
+  }).exec()
+
+  if (existing) {
+    // update
+    const updated = await Completed.findOneAndUpdate(
+      {
+        user: req.user._id,
+        course: courseId,
+      },
+      {
+        $addToSet: { lessons: lessonId },
+      }
+    ).exec()
+    res.json({ ok: true })
+  } else {
+    // create
+    const created = await new Completed({
+      user: req.user._id,
+      course: courseId,
+      lessons: lessonId,
+    }).save()
+    res.json({ ok: true })
+  }
+}
+
+export const listCompleted = async (req, res) => {
+  try {
+    const list = await Completed.findOne({
+      user: req.user._id,
+      course: req.body.courseId,
+    }).exec()
+    list && res.json(list.lessons)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+export const markIncomplete = async (req, res) => {
+  try {
+    const { courseId, lessonId } = req.body
+
+    const updated = await Completed.findOneAndUpdate(
+      {
+        user: req.user._id,
+        course: courseId,
+      },
+      {
+        $pull: { lessons: lessonId },
+      }
+    ).exec()
+    res.json({ ok: true })
+  } catch (err) {
+    console.log(err)
+  }
 }

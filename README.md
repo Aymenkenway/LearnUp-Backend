@@ -1,99 +1,119 @@
-````markdown
 # LearnUp Backend
 
-Welcome to the backend repository of **LearnUp**, the server-side application that powers the e-learning platform.
+This repository contains the backend for the LearnUp e-learning platform. The backend is built with Node.js and Express, providing a robust API to support functionalities like user authentication, course management, and payment integration.
 
-## 🌟 Features
+## Features
 
-- **User Authentication**: JWT-based secure login and registration.
-- **Course Management**: APIs for creating, updating, and managing courses.
-- **Payment Processing**: Integrated with Stripe and PayPal.
-- **File Uploads**:Cloudinary support for media uploads.
-- **Email Notifications**: SendGrid for transactional emails.
-- **Secure and Scalable**: CSRF protection, cookie parsing, and MongoDB Atlas integration.
+- **Authentication**: Secure user login, registration, and password reset with JSON Web Tokens (JWT).
+- **Role-Based Access**: Support for students, instructors, and admin roles.
+- **Course Management**: Create, update, publish, and delete courses with lessons.
+- **Payment Integration**: Stripe-based payments for course enrollment.
+- **Statistics**: Revenue tracking and enrolled student statistics for instructors.
+- **Protected Routes**: JWT and CSRF protection for secure API access.
 
-## 🛠️ Technologies Used
+---
 
-- **Framework**: Express.js
-- **Database**: MongoDB Atlas
-- **Authentication**: JWT
-- **File Storage**: Cloudinary
-- **Payments**: Stripe, PayPal
-- **Utilities**: bcrypt, slugify, nanoid
-- **Email Service**: SendGrid
+## Technologies Used
 
-## 🚀 Getting Started
+- **Node.js**: Backend runtime environment.
+- **Express.js**: Web framework for creating APIs.
+- **MongoDB**: Database for storing user and course information.
+- **Stripe**: Payment processing.
+- **JWT**: Authentication and session management.
+- **Cloudinary**: For file uploads like course videos and images.
+- **SendGrid**: Email service for notifications and password reset links.
 
-### Prerequisites
+---
 
-- Node.js installed on your machine
-- MongoDB Atlas account
-- API keys for Stripe, Cloudinary, and SendGrid
+## Installation
 
-### Installation
+1. Clone this repository:
 
-1. Clone the repository:
    ```bash
    git clone https://github.com/Aymenkenway/LearnUp-Backend
+   cd LearnUp-Backend
    ```
-````
 
-2. Navigate to the project folder:
-   ```bash
-   cd learnup-backend
-   ```
-3. Install dependencies:
+2. Install dependencies:
+
    ```bash
    npm install
    ```
-4. Set up environment variables in `.env`:
-   ```plaintext
-   PORT=<server-port>
-   MONGO_URI=<mongodb-connection-string>
-   JWT_SECRET=<jwt-secret-key>
-   CLOUDINARY_CLOUD_NAME=<cloudinary-cloud-name>
-   CLOUDINARY_API_KEY=<cloudinary-api-key>
-   CLOUDINARY_API_SECRET=<cloudinary-api-secret>
-   STRIPE_SECRET_KEY=<your-stripe-secret-key>
-   SENDGRID_API_KEY=<sendgrid-api-key>
+
+3. Create a `.env` file in the root directory and configure the following variables:
+
+   ```env
+   DATABASE_URL=<Your MongoDB connection string>
+   JWT_SECRET=<Your JWT secret key>
+   STRIPE_SECRET_KEY=<Your Stripe secret key>
+   SENDGRID_API_KEY=<Your SendGrid API key>
+   AWS_ACCESS_KEY_ID=<Your AWS access key>
+   AWS_SECRET_ACCESS_KEY=<Your AWS secret key>
+   AWS_BUCKET_NAME=<Your S3 bucket name>
    ```
-5. Start the server:
+
+4. Start the development server:
    ```bash
    npm start
    ```
 
-## 📂 Folder Structure
+---
 
-- `/controllers`: Core business logic for features.
-- `/models`: MongoDB schemas for users, courses, and lessons.
-- `/routes`: REST API routes for various modules.
-- `/middleware`: Authentication and error handling middleware.
+## API Endpoints
 
-## 📊 API Documentation
+### **Authentication Routes**
 
-| Endpoint                   | Method | Description                      |
-| -------------------------- | ------ | -------------------------------- |
-| `/api/auth/register`       | POST   | Register a new user              |
-| `/api/auth/login`          | POST   | Authenticate a user              |
-| `/api/courses`             | GET    | Get a list of all courses        |
-| `/api/courses`             | POST   | Create a new course (instructor) |
-| `/api/courses/:id`         | PUT    | Update a course                  |
-| `/api/courses/:id`         | DELETE | Delete a course                  |
-| `/api/courses/:id/lessons` | POST   | Add a lesson to a course         |
+- `POST /api/register`: Register a new user.
+- `POST /api/login`: Login user and return a token.
+- `GET /api/logout`: Logout the user.
+- `POST /api/forgot-password`: Send a password reset link.
+- `POST /api/reset-password`: Reset user password.
 
-## 📦 Deployment
+### **Course Routes**
 
-Deploy the backend on [Render](https://render.com/) or [Heroku](https://www.heroku.com/):
+- `POST /api/course`: Create a new course (Instructor only).
+- `PUT /api/course/:slug`: Update a course (Instructor only).
+- `PUT /api/course/publish/:courseId`: Publish a course.
+- `PUT /api/course/unpublish/:courseId`: Unpublish a course.
+- `POST /api/course/lesson/:slug/:instructorId`: Add a lesson to a course.
+- `PUT /api/course/lesson/:slug/:instructorId`: Update a lesson.
+- `GET /api/courses`: Get a list of all courses.
+- `GET /api/course/:slug`: View course details.
 
-1. Push the repository to your GitHub account.
-2. Connect the repository on the deployment platform.
-3. Add required environment variables.
-4. Deploy and test your APIs.
+### **Payment Routes**
 
-## 📜 License
+- `POST /api/free-enrollment/:courseId`: Enroll in a free course.
+- `POST /api/paid-enrollment/:courseId`: Enroll in a paid course.
+- `GET /api/stripe-success/:courseId`: Stripe payment success callback.
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+### **Instructor Routes**
+
+- `POST /api/make-instructor`: Register as an instructor.
+- `GET /api/current-instructor`: Verify instructor role.
+- `GET /api/instructor-courses`: View instructor-created courses.
+- `POST /api/instructor/student-count`: Get enrolled student count.
+
+---
+
+## Project Structure
 
 ```
-
+learnup-backend/
+├── controllers/     # Logic for handling API requests
+├── middlewares/     # Custom middleware for authentication
+├── models/          # Mongoose schemas
+├── routes/          # API route definitions
+├── utils/           # Utility functions
+├── server.js        # Main entry point of the application
+└── .env             # Environment variables
 ```
+
+---
+
+## Challenges Faced
+
+1. **Stripe Integration**: Configuring webhooks and handling secure payments required in-depth understanding.
+2. **Role-Based Access**: Implementing middleware for various user roles was challenging but rewarding.
+3. **Video Uploads**: Handling large video uploads securely to AWS S3 required fine-tuning.
+
+---
